@@ -13,15 +13,19 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
     const loginFunction = (e) => {
         e.preventDefault()
         if(userEmail.length > 0 && userPassword.length > 0) {
-            axios.get(`http://localhost:8080/users/${userEmail}/${userPassword}`)
-                .then(function(response) {
-                    var user = response.data
-                    if (user) {
-                        setUser(user)
-                        localStorage.setItem('user', JSON.stringify(user))
-                        setSinalizeDataBase(!sinalizeDataBase)
-                    }
-                })
+            if (userEmail !== "root") {
+                axios.get(`/users/${userEmail}/${userPassword}`)
+                    .then(function(response) {
+                        var user = response.data
+                        if (user) {
+                            setUser(user)
+                            localStorage.setItem('user', JSON.stringify(user))
+                            setSinalizeDataBase(!sinalizeDataBase)
+                        }
+                    })
+            } else if(userPassword === "1234") {
+                alert("Logged in as Administrator")
+            }
         }
     }
     return (

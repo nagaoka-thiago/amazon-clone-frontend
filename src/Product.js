@@ -7,7 +7,7 @@ function Product({ user, nbr, title, price, rating, image, cart, sinalizeDataBas
     const AddCart = (event) => {
         event.preventDefault()
         if (!cart.find(c => c.user.cpf === user.cpf && c.product.nbr === nbr)) {
-            axios.post(`http://localhost:8080/cartitems/add/${user.cpf}/${nbr}`)
+            axios.post(`/cartitems/add/${user.cpf}/${nbr}`)
                 .then(function(response) {
                     const item = response.data
                     if(item)

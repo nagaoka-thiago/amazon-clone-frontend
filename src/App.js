@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     if(user) {
-      axios.get(`http://localhost:8080/cartitems/${user.cpf}/`)
+      axios.get(`/cartitems/${user.cpf}/`)
       .then(function(response) {
         setCart(response.data)
       })

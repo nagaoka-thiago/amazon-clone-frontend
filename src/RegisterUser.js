@@ -22,8 +22,10 @@ function RegisterUser() {
                 <FormField>
                     <FormLabel>Sex</FormLabel>
                     <FormSelect>
+                        <option value=" ">Select your gender</option>
                         <option value="M">Male</option>
                         <option value="F">Female</option>
+                        <option value="O">Others</option>
                     </FormSelect>
                 </FormField>
                 <FormField>
@@ -71,26 +73,48 @@ function RegisterUser() {
 export default RegisterUser
 
 const Container = styled.div`
+    display: flex;
+    flex-direction: column;
     background-color: white;
-    padding: 100px;
+    padding: 200px;
 `
 
 const Title = styled.span`
     font-size: 30px;
     font-weight: 600;
+    margin-bottom: 20px;
 `
 
 const FormContainer = styled.div`
     box-shadow: 0 1px 3px gray;
+    padding: 15px;
 `
 
-const FormField = styled.div``
+const FormField = styled.div`
+    padding: 5px;
+    input[type=text] {
+        font-size: 20px;
+        height: 30px;
+    }
+`
 
-const FormLabel = styled.span``
+const FormLabel = styled.span`
+    font-size: 20px;
+    margin-right: 10px;
+`
 
-const FormTextField = styled.input``
+const FormTextField = styled.input`
+    font-size: 20px;
+    height: 30px;
+    margin-right: 20px;
+    outline: none;
+    
+`
 
-const FormSelect = styled.select``
+const FormSelect = styled.select`
+    font-size: 20px;
+    height: 30px;
+`
 
 const FormActionSection = styled.div``
 

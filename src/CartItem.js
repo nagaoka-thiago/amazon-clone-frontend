@@ -32,7 +32,7 @@ function CartItem({ user, nbr, image, title, quantity, price, cart, sinalizeData
         const item = cart.find(c => c.user.cpf === user.cpf && c.product.nbr === nbr)
         if (item !== undefined) {
             item.quantity = event.target.value
-            axios.put(`http://localhost:8080/cartitems/update/`, item)
+            axios.put(`/cartitems/update/`, item)
             .then(function(response) {
                 const item = response.data
                 if(item)
@@ -46,7 +46,7 @@ function CartItem({ user, nbr, image, title, quantity, price, cart, sinalizeData
     
     const deleteFunction = (event) => {
         event.preventDefault()
-        axios.delete(`http://localhost:8080/cartitems/delete/${user.cpf}/${nbr}`)
+        axios.delete(`/cartitems/delete/${user.cpf}/${nbr}`)
             .then(function(response) {
                 const item = response.data
                 if(item)

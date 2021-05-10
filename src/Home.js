@@ -8,7 +8,7 @@ function Home({ user, cart, sinalizeDataBase, setSinalizeDataBase }) {
     const [products, setProducts] = useState([])
     
     useEffect(() => {
-        axios.get('http://localhost:8080/products/')
+        axios.get('/products/')
         .then(function(response) {
             setProducts(response.data)
             })
