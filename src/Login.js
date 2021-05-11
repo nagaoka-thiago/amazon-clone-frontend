@@ -99,9 +99,7 @@ const FormText = styled.input`
     font-size: 20px;
     text-align: center;
     border-radius: 10px;
-    outline: none;
     background-color: rgb(202, 202, 202);
-    outline: none;
     border: none;
 
 `
