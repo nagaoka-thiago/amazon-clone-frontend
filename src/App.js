@@ -1,8 +1,13 @@
 import './App.css';
 import Header from './Header'
+import HeaderAdmin from './HeaderAdmin';
 import Home from './Home'
+import HomeAdmin from './HomeAdmin'
 import Cart from './Cart'
 import Login from './Login'
+import RegisterUser from './RegisterUser';
+import UserAdmin from './UserAdmin';
+import ProductAdmin from './ProductAdmin'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -10,7 +15,6 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import RegisterUser from './RegisterUser';
 
 const axios = require('axios')
 
@@ -24,18 +28,19 @@ function App() {
 
   useEffect(() => {
     if(user) {
-      axios.get(`/cartitems/${user.cpf}/`)
-      .then(function(response) {
-        setCart(response.data)
-      })
+      if(!('isAdmin' in user)) {
+        axios.get(`/cartitems/${user.cpf}/`)
+        .then(function(response) {
+          setCart(response.data)
+        })
+      }
     }
 }, [sinalizeDataBase])
 
   return (
       <Router>
         {
-          user == null ? (
-                              // <Login setUser={ setUser } sinalizeDataBase={ sinalizeDataBase } setSinalizeDataBase={ setSinalizeDataBase } />
+          user === null ? (
                               <Switch>
                                   <Route path="/register">
                                     <RegisterUser />
@@ -44,7 +49,7 @@ function App() {
                                     <Login setUser={ setUser } sinalizeDataBase={ sinalizeDataBase } setSinalizeDataBase={ setSinalizeDataBase } />
                                   </Route>
                               </Switch>
-                         ) : (
+                         ) : !('isAdmin' in user) ? (
                               <Container>
                                 <Header user={ user } setUser={ setUser } cart={cart} sinalizeDataBase={ sinalizeDataBase } setSinalizeDataBase={ setSinalizeDataBase } />
                                 <Switch>
@@ -56,6 +61,21 @@ function App() {
                                   </Route>
                                   <Route path="/">
                                     <Home user={ user } cart={cart} sinalizeDataBase = {sinalizeDataBase} setSinalizeDataBase = {setSinalizeDataBase} />
+                                  </Route>
+                                </Switch>
+                              </Container>
+                            ) : (
+                              <Container>
+                                <HeaderAdmin setUser={ setUser } sinalizeDataBase={ sinalizeDataBase } setSinalizeDataBase={ setSinalizeDataBase } />
+                                <Switch>
+                                  <Route path="/userscontrol">
+                                    <UserAdmin />
+                                  </Route>
+                                  <Route path="/productscontrol">
+                                    <ProductAdmin />
+                                  </Route>
+                                  <Route path="/">
+                                    <HomeAdmin />
                                   </Route>
                                 </Switch>
                               </Container>

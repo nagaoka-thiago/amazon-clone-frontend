@@ -13,7 +13,7 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
     const loginFunction = (e) => {
         e.preventDefault()
         if(userEmail.length > 0 && userPassword.length > 0) {
-            if (userEmail !== "root") {
+            if (userEmail !== "admin") {
                 axios.get(`/users/${userEmail}/${userPassword}`)
                     .then(function(response) {
                         var user = response.data
@@ -24,7 +24,9 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                         }
                     })
             } else if(userPassword === "1234") {
-                alert("Logged in as Administrator")
+                setUser({ isAdmin: true })
+                localStorage.setItem('user', JSON.stringify({ isAdmin: true }))
+                setSinalizeDataBase(!sinalizeDataBase)
             }
         }
     }
@@ -101,7 +103,7 @@ const FormText = styled.input`
     border-radius: 10px;
     background-color: rgb(202, 202, 202);
     border: none;
-
+    outline: none;
 `
 
 const ButtonContainer = styled.div`
