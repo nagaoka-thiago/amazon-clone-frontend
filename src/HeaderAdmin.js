@@ -21,16 +21,12 @@ function HeaderAdmin({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                 </Link>
             </Logo>
             <LinkSection>
-                <LinkItem>
-                    <Link to="/userscontrol">
-                        <h1>Users</h1>
-                    </Link>
-                </LinkItem>
-                <LinkItem>
-                    <Link to="/productscontrol">
-                        <h1>Products</h1>
-                    </Link>
-                </LinkItem>
+                <Link to="/userscontrol">
+                    <h1>Users</h1>
+                </Link>
+                <Link to="/productscontrol">
+                    <h1>Products</h1>
+                </Link>
                 <LinkItem onClick={ logOutFunction }>
                     <h1>Log out</h1>
                 </LinkItem>
@@ -64,15 +60,25 @@ const LinkSection = styled.div`
     display: flex;
     flex: 0.93;
     justify-content: space-between;
-`
-const LinkItem = styled.div`
-    display: flex;
-    flex: 1;
-    border: 1px solid transparent;
     a {
         text-decoration: none;
         color: white;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        :hover {
+            background-color: rgb(221, 88, 0);
+            cursor: pointer;
+        }
     }
+`
+
+const LinkItem = styled.div`
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex: 1;
+    justify-content: center;
     :hover {
         background-color: rgb(221, 88, 0);
         cursor: pointer;

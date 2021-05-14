@@ -101,7 +101,6 @@ function RegisterUser() {
             axios.get(`/users/${cpf}`)
                 .then(function(response) {
                     const user = response.data
-                    console.log(user)
                     if(user === null || user === undefined || user === "") {
                         axios.post('/users/add/', {
                             cpf,
