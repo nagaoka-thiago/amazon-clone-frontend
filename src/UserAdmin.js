@@ -7,12 +7,12 @@ function UserAdmin() {
     const [users, setUsers] = useState([])
 
     const cpfFormat = (number) => {
-        const reg = /(?<n11>\d)(?<n10>\d)(?<n9>\d)(?<n8>\d)(?<n7>\d)(?<n6>\d)(?<n5>\d)(?<n4>\d)(?<n3>\d)(?<n2>\d)(?<n1>\d)/
+        const reg = /(?<fp>\d\d\d)(?<sp>\d\d\d)(?<td>\d\d\d)(?<fop>\d\d)/
         const ex = reg.exec(number)
-        return ex.groups.n11 + ex.groups.n10 + ex.groups.n9 + "." +
-               ex.groups.n8 + ex.groups.n7 + ex.groups.n6 + "." +
-               ex.groups.n5 + ex.groups.n4 + ex.groups.n3 + "-" +
-               ex.groups.n2 + ex.groups.n1
+        return ex.groups.fp + "." +
+               ex.groups.sp + "." +
+               ex.groups.td + "-" +
+               ex.groups.fop
     }
 
     const birthdayFormat = (dbFormat) => {
@@ -82,33 +82,28 @@ const Title = styled.div`
     justify-content: center;
 `
 
-const TableContent = styled.div`
-    margin: 20px 10px;
-    padding: 5px;
+const TableContent = styled.table`
+    width: 100%;
+    padding: 20px 10px;
     background-color: rgb(185, 185, 185);
 `
 
-const Line = styled.div`
-    display: flex;
-    margin: 10px 5px;
-    :hover {
+const Line = styled.tr`
+    :has(> td) {
         background-color: rgb(149, 149, 149);
     }
 `
 
-const LineHeader = styled.div`
-    display: flex;
+const LineHeader = styled.th`
     font-size: 25px;
-    font-weight: 600;
-    margin: 10px 5px;
-    justify-content: center;
+    text-align: left;
+    border: 1px solid black;
     flex: 1;
 `
 
-const LineDisplay = styled.div`
-    display: flex;
+const LineDisplay = styled.td`
     font-size: 12px;
-    margin: 10px 5px;
-    justify-content: center;
+    text-align: left;
+    border: 1px solid black;
     flex: 1;
 `

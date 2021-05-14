@@ -57,33 +57,23 @@ const Title = styled.div`
     justify-content: center;
 `
 
-const TableContent = styled.div`
-    margin: 20px 10px;
-    padding: 5px;
+const TableContent = styled.table`
+    width: 100%;
     background-color: rgb(185, 185, 185);
 `
 
-const Line = styled.div`
-    display: flex;
-    margin: 10px 5px;
+const Line = styled.tr`
     :hover {
         background-color: rgb(149, 149, 149);
     }
 `
 
-const LineHeader = styled.div`
-    display: flex;
-    font-size: 25px;
-    font-weight: 600;
-    margin: 10px 5px;
-    justify-content: center;
+const LineHeader = styled.th`
+    text-align: left;
     flex: 1;
 `
 
-const LineDisplay = styled.div`
-    display: flex;
-    font-size: 12px;
-    margin: 10px 5px;
-    justify-content: center;
+const LineDisplay = styled.td`
+    text-align: left;
     flex: 1;
 `
