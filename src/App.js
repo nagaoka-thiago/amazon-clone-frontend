@@ -1,4 +1,6 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Header from './Header'
 import HeaderAdmin from './HeaderAdmin';
 import Home from './Home'

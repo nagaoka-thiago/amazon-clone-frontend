@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
+import { Table, Spinner } from 'react-bootstrap'
+
 const axios = require('axios')
 
 function UserAdmin() {
     const [users, setUsers] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const cpfFormat = (number) => {
         const reg = /(?<fp>\d\d\d)(?<sp>\d\d\d)(?<td>\d\d\d)(?<fop>\d\d)/
@@ -24,48 +27,62 @@ function UserAdmin() {
     }
 
     useEffect(() => {
-        axios.get('/users/')
-            .then(function(response) {
-                setUsers([...response.data])
-            })
+        if(loading) {
+            axios.get('/users/')
+                .then(function(response) {
+                    setUsers([...response.data])
+                    setLoading(false)
+                })
+        }
     }, [])
     return (
         <Container>
             <Title>
                 <h1>User controlling section</h1>
             </Title>
-            <TableContent>
-                <Line>
-                    <LineHeader>CPF</LineHeader>
-                    <LineHeader>Name</LineHeader>
-                    <LineHeader>Birthday</LineHeader>
-                    <LineHeader>Sex</LineHeader>
-                    <LineHeader>Street</LineHeader>
-                    <LineHeader>Number</LineHeader>
-                    <LineHeader>City</LineHeader>
-                    <LineHeader>State</LineHeader>
-                    <LineHeader>Country</LineHeader>
-                    <LineHeader>E-mail</LineHeader>
-                    <LineHeader>Action</LineHeader>
-                </Line>
-                {
-                    users.map(user =>
-                        <Line key={user.cpf}>
-                            <LineDisplay>{cpfFormat(user.cpf)}</LineDisplay>
-                            <LineDisplay>{user.name}</LineDisplay>
-                            <LineDisplay>{birthdayFormat(user.birthday)}</LineDisplay>
-                            <LineDisplay>{user.sex}</LineDisplay>
-                            <LineDisplay>{user.address}</LineDisplay>
-                            <LineDisplay>{user.nbr}</LineDisplay>
-                            <LineDisplay>{user.city}</LineDisplay>
-                            <LineDisplay>{user.state}</LineDisplay>
-                            <LineDisplay>{user.country}</LineDisplay>
-                            <LineDisplay>{user.email}</LineDisplay>
-                            <LineDisplay>My actions</LineDisplay>
-                        </Line>
-                        )
-                }
-            </TableContent>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th>CPF</th>
+                        <th>Name</th>
+                        <th>Birthday</th>
+                        <th>Sex</th>
+                        <th>Street</th>
+                        <th>Number</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>E-mail</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        users.map(user =>
+                            <tr key={user.cpf}>
+                                <td>{cpfFormat(user.cpf)}</td>
+                                <td>{user.name}</td>
+                                <td>{birthdayFormat(user.birthday)}</td>
+                                <td>{user.sex}</td>
+                                <td>{user.address}</td>
+                                <td>{user.nbr}</td>
+                                <td>{user.city}</td>
+                                <td>{user.state}</td>
+                                <td>{user.country}</td>
+                                <td>{user.email}</td>
+                                <td>My actions</td>
+                            </tr>
+                            )
+                    }
+                </tbody>
+            </Table>
+            {
+                loading ? (
+                            <Spinner animation="border" role="status">
+                                <span className="sr-only">Loading...</span>
+                            </Spinner>
+                          ) : null
+            }
         </Container>
 
     )
@@ -80,30 +97,4 @@ const Container = styled.div`
 const Title = styled.div`
     display: flex;
     justify-content: center;
-`
-
-const TableContent = styled.table`
-    width: 100%;
-    padding: 20px 10px;
-    background-color: rgb(185, 185, 185);
-`
-
-const Line = styled.tr`
-    :has(> td) {
-        background-color: rgb(149, 149, 149);
-    }
-`
-
-const LineHeader = styled.th`
-    font-size: 25px;
-    text-align: left;
-    border: 1px solid black;
-    flex: 1;
-`
-
-const LineDisplay = styled.td`
-    font-size: 12px;
-    text-align: left;
-    border: 1px solid black;
-    flex: 1;
 `

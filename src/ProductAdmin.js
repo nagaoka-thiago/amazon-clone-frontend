@@ -1,16 +1,23 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
+import { Table, Modal, Button, Figure, Spinner } from 'react-bootstrap'
 
 const axios = require('axios')
 
 function ProductAdmin() {
     const [products, setProducts] = useState([])
+    const [show, setShow] = useState(false)
+    const [imageUrl, setImageUrl] = useState('')
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        axios.get('/products/')
-            .then(function(response) {
-                setProducts([...response.data])
-            })
+        if(loading) {
+            axios.get('/products/')
+                .then(function(response) {
+                    setProducts([...response.data])
+                    setLoading(false)
+                })
+        }
     }, [])
 
     return (
@@ -18,31 +25,60 @@ function ProductAdmin() {
             <Title>
                 <h1>Product controlling section</h1>
             </Title>
-            <TableContent>
-                <Line>
-                    <LineHeader>Number</LineHeader>
-                    <LineHeader>Title</LineHeader>
-                    <LineHeader>Image's URL</LineHeader>
-                    <LineHeader>Quantity</LineHeader>
-                    <LineHeader>Rating</LineHeader>
-                    <LineHeader>Price</LineHeader>
-                    <LineHeader>Action</LineHeader>
-                </Line>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Title</th>
+                        <th>Image's URL</th>
+                        <th>Quantity</th>
+                        <th>Rating</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {
                     products.map(product =>
-                        <Line key={product.nbr}>
-                            <LineDisplay>{product.nbr}</LineDisplay>
-                            <LineDisplay>{product.title}</LineDisplay>
-                            <LineDisplay>{product.image}</LineDisplay>
-                            <LineDisplay>{product.quantity}</LineDisplay>
-                            <LineDisplay>{product.rating}</LineDisplay>
-                            <LineDisplay>{product.price}</LineDisplay>
-                            <LineDisplay>My actions</LineDisplay>
-                        </Line>
+                        <tr key={product.nbr}>
+                            <td>{product.nbr}</td>
+                            <td>{product.title}</td>
+                            <td><Button variant="primary" onClick={ () => {setShow(true); setImageUrl(product.image)} }>Show image</Button></td>
+                            <td>{product.quantity}</td>
+                            <td>{product.rating}</td>
+                            <td>{product.price}</td>
+                            <td>My actions</td>
+                        </tr>
                         )
                 }
-            </TableContent>
+                </tbody>
+            </Table>
+            <Modal show={show}
+                   onHide={ () => setShow(false) }
+                   size="sm"
+                   >
+                <Modal.Header closeButton>
+                    <Modal.Title>Product's image</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Figure>
+                        <Figure.Image width="100%" height="100%" src={ imageUrl } />
+                    </Figure>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary"
+                            onClick={ () => setShow(false) }>Close</Button>
+                </Modal.Footer>
+            </Modal>
+            {
+                loading ? (
+                            <Spinner animation="border" role="status">
+                                <span className="sr-only">Loading...</span>
+                            </Spinner>
+                          ) : null
+            }
     </Container>
+    
     )
 }
 
@@ -55,25 +91,4 @@ const Container = styled.div`
 const Title = styled.div`
     display: flex;
     justify-content: center;
-`
-
-const TableContent = styled.table`
-    width: 100%;
-    background-color: rgb(185, 185, 185);
-`
-
-const Line = styled.tr`
-    :hover {
-        background-color: rgb(149, 149, 149);
-    }
-`
-
-const LineHeader = styled.th`
-    text-align: left;
-    flex: 1;
-`
-
-const LineDisplay = styled.td`
-    text-align: left;
-    flex: 1;
 `

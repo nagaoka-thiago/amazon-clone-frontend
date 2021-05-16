@@ -3,15 +3,18 @@ import styled from 'styled-components'
 import {
     Link
 } from "react-router-dom";
+import { Button } from 'react-bootstrap';
 
 const axios = require('axios')
 
 function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
     const [userEmail, setUserEmail] = useState('')
     const [userPassword, setUserPassword] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const loginFunction = (e) => {
         e.preventDefault()
+        setLoading(true)
         if(userEmail.length > 0 && userPassword.length > 0) {
             if (userEmail !== "admin") {
                 axios.get(`/users/${userEmail}/${userPassword}`)
@@ -29,6 +32,7 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                 setSinalizeDataBase(!sinalizeDataBase)
             }
         }
+        setLoading(false)
     }
     return (
         <Container>
@@ -44,9 +48,9 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                 </PasswordField>
             </FormContent>
             <ButtonContainer>
-                <LoginButton onClick={ loginFunction }>
-                    Sign in
-                </LoginButton>
+                <Button variant="primary" onClick={ loginFunction }>
+                    { loading ? "Loading..." : "Sign in" }
+                </Button>
                 <RegisterButton>
                     <Link to="/register">Register new user</Link>
                 </RegisterButton>
@@ -110,23 +114,6 @@ const ButtonContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-`
-
-const LoginButton = styled.button`
-    margin-top: 50px;
-    margin-right: 30px;
-    background-color: rgb(255, 145, 70);
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    height: 40px;
-    width: 100px;
-    overflow: hidden;
-    font-size: 20px;
-    :hover {
-        background-color: rgb(221, 88, 0);
-        cursor: pointer;
-    }
 `
 
 const RegisterButton = styled.button`
