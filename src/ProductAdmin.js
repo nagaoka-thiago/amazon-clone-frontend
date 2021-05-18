@@ -1,13 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import { Table, Modal, Button, Figure, Spinner } from 'react-bootstrap'
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const axios = require('axios')
 
 function ProductAdmin() {
     const [products, setProducts] = useState([])
-    const [show, setShow] = useState(false)
+    const [showImage, setShowImage] = useState(false)
     const [imageUrl, setImageUrl] = useState('')
+    const [showForm, setShowForm] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -25,7 +29,7 @@ function ProductAdmin() {
             <Title>
                 <h1>Product controlling section</h1>
             </Title>
-            <Table hover>
+            <Table size="sm" hover>
                 <thead>
                     <tr>
                         <th>Number</th>
@@ -43,18 +47,33 @@ function ProductAdmin() {
                         <tr key={product.nbr}>
                             <td>{product.nbr}</td>
                             <td>{product.title}</td>
-                            <td><Button variant="primary" onClick={ () => {setShow(true); setImageUrl(product.image)} }>Show image</Button></td>
+                            <td><Button variant="outline-primary" onClick={ () => {setImageUrl(product.image); setShowImage(true);} }>Show image</Button></td>
                             <td>{product.quantity}</td>
                             <td>{product.rating}</td>
                             <td>{product.price}</td>
-                            <td>My actions</td>
+                            <td>
+                                <Button variant="outline-primary" onClick={() => setShowForm(true)}><EditIcon /></Button>
+                                <Button variant="outline-primary" onClick={() => alert(product.title)}><DeleteIcon /></Button>
+                            </td>
                         </tr>
                         )
                 }
+                    <tr>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>
+                            <Button variant="outline-primary" onClick={() => setShowForm(true)}><AddIcon /></Button>
+                        </td>
+                    </tr>
                 </tbody>
             </Table>
-            <Modal show={show}
-                   onHide={ () => setShow(false) }
+            
+            <Modal show={showImage}
+                   onHide={ () => setShowImage(false) }
                    size="sm"
                    >
                 <Modal.Header closeButton>
@@ -67,18 +86,34 @@ function ProductAdmin() {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary"
-                            onClick={ () => setShow(false) }>Close</Button>
+                            onClick={ () => setShowImage(false) }>Close</Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showForm}
+                   onHide={ () => setShowForm(false) }
+                   size="sm"
+                   >
+                <Modal.Header closeButton>
+                    <Modal.Title>Hello world</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h1>Hello world</h1>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary"
+                            onClick={ () => setShowForm(false) }>Close</Button>
                 </Modal.Footer>
             </Modal>
             {
                 loading ? (
-                            <Spinner animation="border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </Spinner>
+                            <LoadingContainer>
+                                <Spinner animation="border" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </Spinner>
+                            </LoadingContainer>
                           ) : null
             }
     </Container>
-    
     )
 }
 
@@ -89,6 +124,11 @@ const Container = styled.div`
 `
 
 const Title = styled.div`
+    display: flex;
+    justify-content: center;
+`
+
+const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
 `

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import NumberFormat from 'react-number-format'
+import { Form, Col, Button, Alert } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
 
 const axios = require('axios')
@@ -19,6 +20,10 @@ function RegisterUser() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confPass, setConfPass] = useState('')
+    const [messageDangerBirthday, setMessageDangerBirthday] = useState('Type a valid birthday!')
+    const [messageDangerAdd, setMessageDangerAdd] = useState('')
+    const [messageSuccessAdd, setMessageSuccessAdd] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const isLeapYear = (n) => {
         return ((n % 400) === 0 || ((n % 4) === 0 && (n % 100) !== 0))
@@ -30,22 +35,47 @@ function RegisterUser() {
             const ex = reg.exec(e.formattedValue)
             const {year, month, day} = ex.groups
             const today = new Date()
-            if(parseInt(year) > today.getFullYear()) alert(`Type a valid year! (Less or equal than ${today.getFullYear()})`)
-            else if(parseInt(month) < 1 || parseInt(month) > 12) alert('Type a valid month! (Between 1 and 12)')
-            else if(parseInt(day) < 1) alert('Type a valid day! (Greater or equal to 1)')
-            else if(parseInt(day) > 31) alert('Type a valid day! (Between 1 and 31)')
+            if(parseInt(year) > today.getFullYear()) {
+                setMessageDangerBirthday(`Type a valid year! (Less or equal than ${today.getFullYear()})`)
+                setBirthday('')
+            }
+            else if(parseInt(month) < 1 || parseInt(month) > 12) {
+                setMessageDangerBirthday('Type a valid month! (Between 1 and 12)')
+                setBirthday('')
+            }
+            else if(parseInt(day) < 1) {
+                setMessageDangerBirthday('Type a valid day! (Greater or equal to 1)')
+                setBirthday('')
+            }
+            else if(parseInt(day) > 31) {
+                setMessageDangerBirthday('Type a valid day! (Between 1 and 31)')
+                setBirthday('')
+            }
             else if(parseInt(month) === 4 || parseInt(month) === 6 || parseInt(month) === 9 || parseInt(month) === 11) {
-                if(parseInt(day) > 30) alert('Type a valid day! (Between 1 and 30)')
+                if(parseInt(day) > 30) {
+                    setMessageDangerBirthday('Type a valid day! (Between 1 and 30)')
+                    setBirthday('')
+                }
                 else setBirthday(year + "-" + month + "-" + day)
             }
             else if(parseInt(month) === 2) {
                 if(isLeapYear(parseInt(year))) {
-                    if(parseInt(day) > 29) alert(`Type a valid day! (Between 1 and 29 because ${year} is a leap year)`)
+                    if(parseInt(day) > 29) {
+                        setMessageDangerBirthday(`Type a valid day! (Between 1 and 29 because ${year} is a leap year)`)
+                        setBirthday('')
+                    }
                     else setBirthday(year + "-" + month + "-" + day)
                 }
-                else if(parseInt(day) > 28) alert('Type a valid day! (Between 1 and 28)')
+                else if(parseInt(day) > 28) {
+                    setMessageDangerBirthday('Type a valid day! (Between 1 and 28)')
+                    setBirthday('')
+                }
                 else setBirthday(year + "-" + month + "-" + day)
             }
+        }
+        else {
+            setMessageDangerBirthday('Type a valid birthday!')
+            setBirthday('')
         }
     }
 
@@ -75,28 +105,29 @@ function RegisterUser() {
                                          parseInt(n3) * 3 +
                                          parseInt(n2) * 2) * 10 % 11) === parseInt(n1)
                     if(!secondDigitVer) {
-                        alert(`${e.formattedValue} is an invalid CPF.`)
+                        setCpf('')
                     }
                     else setCpf(e.value)
             }
-            else alert(`${e.formattedValue} is an invalid CPF.`)
+            else setCpf('')
         }
     }
 
     const addUser = () => {
-        if(cpf === null) alert('Type your CPF!')
-        else if(name === null) alert('Type your name!')
-        else if(birthday === null) alert('Type your birthday!')
-        else if(sex === " ") alert('Select your gender!')
-        else if(address === null) alert('Type your address!')
-        else if(number === null) alert('Type your address number!')
-        else if(city === null) alert('Type your city!')
-        else if(state === null) alert('Type your state!')
-        else if(country === null) alert('Type your country!')
-        else if(email === null) alert('Type your e-mail!')
-        else if(password === null) alert('Type a password!')
-        else if(confPass === null) alert('Confirm your password!')
-        else if(password !== confPass) alert('Typed password does not match with your confirmed password!')
+        setLoading(true)
+        if(name === "") setMessageDangerAdd('Type your name!')
+        else if(cpf === "") setMessageDangerAdd('Type your CPF!')
+        else if(birthday === "") setMessageDangerAdd('Type your birthday!')
+        else if(sex === " ") setMessageDangerAdd('Select your gender!')
+        else if(address === "") setMessageDangerAdd('Type your address!')
+        else if(number === "") setMessageDangerAdd('Type your address number!')
+        else if(city === "") setMessageDangerAdd('Type your city!')
+        else if(state === "") setMessageDangerAdd('Type your state!')
+        else if(country === "") setMessageDangerAdd('Type your country!')
+        else if(email === "") setMessageDangerAdd('Type your e-mail!')
+        else if(password === "") setMessageDangerAdd('Type a password!')
+        else if(confPass === "") setMessageDangerAdd('Confirm your password!')
+        else if(password !== confPass) setMessageDangerAdd('Typed password does not match with your confirmed password!')
         else {
             axios.get(`/users/${cpf}`)
                 .then(function(response) {
@@ -108,7 +139,7 @@ function RegisterUser() {
                             birthday,
                             sex,
                             address,
-                            number,
+                            nbr: number,
                             city,
                             state,
                             country,
@@ -116,86 +147,183 @@ function RegisterUser() {
                             password
                         }).then(function(response) {
                             const newUser = response.data
-                            alert(`User ${newUser.name} registered successfully!`)
-                            history.goBack()
+                            setMessageSuccessAdd(`User ${newUser.name} registered successfully!`)
+                            setTimeout(() => {
+                                setLoading(false)
+                                history.goBack()
+                            }, 3000)
                         })
                     }
                     else
-                        alert(`User ${name} could not be registered, verify if you have already registered with this CPF: ${cpf}`)
+                        setMessageDangerAdd(`User ${name} could not be registered, verify if you have already registered with this CPF: ${cpf}`)
                 })
-            
         }
+        setLoading(false)
     }
 
     return (
         <Container>
             <Title>Registering user</Title>
             <FormContainer>
-                <FormField>
-                    <FormLabel>Your complete name</FormLabel>
-                    <FormTextField type="text" onChange={ (e) => setName(e.target.value) } placeholder="Place your complete name" />
-                </FormField>
-                <FormField>
-                    <FormField>
-                        <FormLabel>CPF</FormLabel>
-                        <NumberFormat format="###.###.###-##" mask="_" onValueChange={ verifyAndSetCpf } placeholder="Place your CPF" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>Birthday</FormLabel>
-                        <NumberFormat format="##/##/####" mask="_" onValueChange={ verifyAndSetDate } placeholder="Place your Birthday" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>Sex</FormLabel>
-                        <FormSelect onChange={ (e) => setSex(e.target.value) }>
-                            <option value=" ">Select your gender</option>
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                            <option value="O">Others</option>
-                        </FormSelect>
-                    </FormField>
-                </FormField>
-                <FormField>
-                    <FormField>
-                        <FormLabel>Street</FormLabel>
-                        <FormTextField type="text" onChange={ (e) => setAddress(e.target.value) } placeholder="Place your address street" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>Number</FormLabel>
-                        <NumberFormat onValueChange={ (e) => setNumber(e.value) } placeholder="Place your address number" />
-                    </FormField>
-                </FormField>
-                <FormField>
-                    <FormField>
-                        <FormLabel>City</FormLabel>
-                        <FormTextField type="text" onChange={ (e) => setCity(e.target.value) } placeholder="Place your city" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>State</FormLabel>
-                        <FormTextField type="text" onChange={ (e) => setState(e.target.value) } placeholder="Place your state" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>Country</FormLabel>
-                        <FormTextField type="text" onChange={ (e) => setCountry(e.target.value) } placeholder="Place your country" />
-                    </FormField>
-                </FormField>
-                <FormField>
-                    <FormLabel>E-mail</FormLabel>
-                    <FormTextField type="email" onChange={ (e) => setEmail(e.target.value) } placeholder="Place your e-mail" />
-                </FormField>
-                <FormField>
-                    <FormField>
-                        <FormLabel>Password</FormLabel>
-                        <FormTextField type="password" onChange={ (e) => setPassword(e.target.value) } placeholder="Place your password" />
-                    </FormField>
-                    <FormField>
-                        <FormLabel>Confirm password</FormLabel>
-                        <FormTextField type="password" onChange={ (e) => setConfPass(e.target.value) } placeholder="Confirm your password" />
-                    </FormField>
-                </FormField>
-                <FormActionSection>
-                    <FormRegisterButton onClick={ addUser }>Register</FormRegisterButton>
-                    <FormBackButton onClick={ () => history.goBack() }>Go back</FormBackButton>
-                </FormActionSection>
+                <Form>
+                    <Form.Row>
+                        <Form.Group as={ Col } controlId="nameContainer">
+                            <Form.Label>Your complete name</Form.Label>
+                            <Form.Control type="text" placeholder="Place your complete name" onChange={ (e) => { setName(e.target.value) } } />
+                            {
+                                name.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                        Type your complete name.
+                                                     </Form.Text>
+                                                    ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="cpfContainer">
+                            <Form.Label>CPF</Form.Label>
+                            <Form.Control as={ NumberFormat } format="###.###.###-##" mask="_" onValueChange={ verifyAndSetCpf } placeholder="Place your CPF" />
+                            {
+                                cpf.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                        Type a valid CPF.
+                                                    </Form.Text>
+                                                    ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="birthdayContainer">
+                            <Form.Label>Birthday</Form.Label>
+                            <Form.Control as={ NumberFormat } format="##/##/####" mask="_" onValueChange={ verifyAndSetDate } placeholder="Place your Birthday" />
+                            {
+                                birthday.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            {messageDangerBirthday}
+                                                         </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="sexContainer">
+                            <Form.Label>Sex</Form.Label>
+                            <Form.Control as="select" onChange={ (e) => setSex(e.target.value) }>
+                                <option value=" ">Select your gender</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Others</option>
+                            </Form.Control>
+                            {
+                                sex === " " || sex === "" ? (<Form.Text as={ Alert } variant="danger">
+                                                            You must select your gender.
+                                                         </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Group as={ Col } controlId="addressStreetContainer">
+                            <Form.Label>Street</Form.Label>
+                            <Form.Control type="text" onChange={ (e) => setAddress(e.target.value) } placeholder="Place your address street" />
+                            {
+                                address.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your address's street.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="addressNumberContainer">
+                            <Form.Label>Number</Form.Label>
+                            <Form.Control as={ NumberFormat } onValueChange={ (e) => setNumber(e.value) } placeholder="Place your address number" />
+                            {
+                                number.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your address's number.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="cityContainer">
+                            <Form.Label>City</Form.Label>
+                            <Form.Control type="text" onChange={ (e) => setCity(e.target.value) } placeholder="Place your city" />
+                            {
+                                city.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your city.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="stateContainer">
+                            <Form.Label>State</Form.Label>
+                            <Form.Control type="text" onChange={ (e) => setState(e.target.value) } placeholder="Place your state" />
+                            {
+                                state.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your state.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="countryContainer">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Control type="text" onChange={ (e) => setCountry(e.target.value) } placeholder="Place your country" />
+                            {
+                                state.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your country.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Group as={ Col } controlId="emailContainer">
+                            <Form.Label>E-mail</Form.Label>
+                            <Form.Control type="email" onChange={ (e) => setEmail(e.target.value) } placeholder="Type your e-mail" />
+                            {
+                                email.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your e-mail.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="passwordContainer">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" onChange={ (e) => setPassword(e.target.value) } placeholder="Type your password" />
+                            {
+                                password.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Type your password.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="confPassContainer">
+                            <Form.Label>Confirm password</Form.Label>
+                            <Form.Control type="password" onChange={ (e) => setConfPass(e.target.value) } placeholder="Confirm your password" />
+                            {
+                                confPass.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                            Confirm your password.
+                                                        </Form.Text>
+                                                        ) : null
+                            }
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row>
+                        {
+                            messageDangerAdd.length > 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                        { messageDangerAdd }
+                                                    </Form.Text>
+                                                    ) : null
+                        }
+                        {
+                            messageSuccessAdd.length > 0 ? (<Form.Text as={ Alert } variant="success">
+                                                        { messageSuccessAdd }
+                                                    </Form.Text>
+                                                    ) : null
+                        }
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Group as={ Col } controlId="registerButtonContainer">
+                            <Button onClick={ addUser } variant="outline-primary">
+                                { loading ? "Loading..." : "Register" }
+                            </Button>
+                        </Form.Group>
+                        <Form.Group as={ Col } controlId="backButtonContainer">
+                            <Button variant="outline-primary" onClick={ () => history.goBack() }>
+                                Go back
+                            </Button>
+                        </Form.Group>
+                    </Form.Row>
+                </Form>
             </FormContainer>
         </Container>
     )
@@ -207,7 +335,9 @@ const Container = styled.div`
     background-color: white;
 `
 
-const Title = styled.span`
+const Title = styled.div`
+    display: flex;
+    justify-content: center;
     font-size: 30px;
     font-weight: 600;
     margin-bottom: 20px;
@@ -215,87 +345,4 @@ const Title = styled.span`
 
 const FormContainer = styled.div`
     padding: 15px;
-`
-
-const FormField = styled.div`
-    display: flex;
-    padding-bottom: 5px;
-    width: 100%;
-    input[type=text] {
-        font-size: 20px;
-        margin-right: 20px;
-        height: 30px;
-        outline: none;
-        border: 0;
-        text-align: center;
-        border-radius: 10px;
-        background-color: rgb(202, 202, 202);
-        flex: 1;
-    }
-`
-
-const FormLabel = styled.span`
-    font-size: 20px;
-    margin-right: 10px;
-`
-
-const FormTextField = styled.input`
-    font-size: 20px;
-    height: 30px;
-    margin-right: 20px;
-    outline: none;
-    border: 0;
-    text-align: center;
-    border-radius: 10px;
-    background-color: rgb(202, 202, 202);
-    flex: 1;
-`
-
-const FormSelect = styled.select`
-    font-size: 20px;
-    height: 30px;
-    margin-right: 20px;
-    outline: none;
-    border: 0;
-    text-align: center;
-    border-radius: 10px;
-    background-color: rgb(202, 202, 202);
-    flex: 1;
-`
-
-const FormActionSection = styled.div`
-    display: flex;
-    justify-content: center;
-`
-
-const FormRegisterButton = styled.button`
-    margin-top: 50px;
-    margin-right: 30px;
-    background-color: rgb(255, 145, 70);
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    width: 100px;
-    overflow: hidden;
-    font-size: 20px;
-    :hover {
-        background-color: rgb(221, 88, 0);
-        cursor: pointer;
-    }
-`
-
-const FormBackButton = styled.button`
-    margin-top: 50px;
-    margin-right: 30px;
-    background-color: rgb(255, 145, 70);
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    width: 100px;
-    overflow: hidden;
-    font-size: 20px;
-    :hover {
-        background-color: rgb(221, 88, 0);
-        cursor: pointer;
-    }
 `

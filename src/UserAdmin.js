@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
-import { Table, Spinner } from 'react-bootstrap'
+import { Table, Spinner, Button, Modal } from 'react-bootstrap'
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const axios = require('axios')
 
 function UserAdmin() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
+    const [showForm, setShowForm] = useState(false)
 
     const cpfFormat = (number) => {
         const reg = /(?<fp>\d\d\d)(?<sp>\d\d\d)(?<td>\d\d\d)(?<fop>\d\d)/
@@ -40,7 +44,7 @@ function UserAdmin() {
             <Title>
                 <h1>User controlling section</h1>
             </Title>
-            <Table hover>
+            <Table size="sm" hover>
                 <thead>
                     <tr>
                         <th>CPF</th>
@@ -70,17 +74,52 @@ function UserAdmin() {
                                 <td>{user.state}</td>
                                 <td>{user.country}</td>
                                 <td>{user.email}</td>
-                                <td>My actions</td>
+                                <td>
+                                    <Button variant="outline-primary" onClick={() => setShowForm(true)}><EditIcon /></Button>
+                                    <Button variant="outline-primary" onClick={() => alert(user.name)}><DeleteIcon /></Button>
+                                </td>
                             </tr>
                             )
                     }
+                    <tr>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>{''}</td>
+                        <td>
+                            <Button variant="outline-primary" onClick={() => setShowForm(true)}><AddIcon /></Button>
+                        </td>
+                    </tr>
                 </tbody>
             </Table>
+            <Modal show={showForm}
+                   onHide={ () => setShowForm(false) }
+                   size="sm"
+                   >
+                <Modal.Header closeButton>
+                    <Modal.Title>Hello world</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h1>Hello world</h1>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary"
+                            onClick={ () => setShowForm(false) }>Close</Button>
+                </Modal.Footer>
+            </Modal>
             {
                 loading ? (
-                            <Spinner animation="border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </Spinner>
+                            <LoadingContainer>
+                                <Spinner animation="border" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </Spinner>
+                            </LoadingContainer>
                           ) : null
             }
         </Container>
@@ -95,6 +134,11 @@ const Container = styled.div`
 `
 
 const Title = styled.div`
+    display: flex;
+    justify-content: center;
+`
+
+const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
 `

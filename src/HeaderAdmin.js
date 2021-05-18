@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import {
     Link
   } from "react-router-dom";
+import { Nav, Button } from 'react-bootstrap';
 
 function HeaderAdmin({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
 
@@ -14,7 +15,7 @@ function HeaderAdmin({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
     }
 
     return (
-        <Container>
+        /*<Container>
             <Logo>
                 <Link to="/">
                     <img src="https://previews.123rf.com/images/ionutparvu/ionutparvu1612/ionutparvu161201855/67603113-administration-stamp-sign-text-word-logo-blue-.jpg" />
@@ -31,56 +32,22 @@ function HeaderAdmin({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                     <h1>Log out</h1>
                 </LinkItem>
             </LinkSection>
-        </Container>
+        </Container>*/
+        <Nav variant="pills" defaultActiveKey="home">
+            <Nav.Item>
+                <Nav.Link as={Link} to="/" eventKey="home">Administration</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link as={Link} to="/userscontrol" eventKey="users">Users</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link as={Link} to="/productscontrol" eventKey="products">Products</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link as={Button} variant="secondary" onClick={ logOutFunction }>Log out</Nav.Link>
+            </Nav.Item>
+        </Nav>
     )
 }
 
 export default HeaderAdmin
-
-const Container = styled.div`
-    display: flex;
-    background-color: rgb(18, 21, 65);
-    color: white;
-    width: 100%;
-    height: 60px;
-    align-items: center;
-    justify-content: space-between;
-`
-const Logo = styled.div`
-    display: flex;
-    height: 100%;
-    cursor: pointer;
-    flex: 0.07;
-    img {
-        width: 100%;
-        height: 100%;
-    }
-`
-const LinkSection = styled.div`
-    display: flex;
-    flex: 0.93;
-    justify-content: space-between;
-    a {
-        text-decoration: none;
-        color: white;
-        display: flex;
-        flex: 1;
-        justify-content: center;
-        :hover {
-            background-color: rgb(221, 88, 0);
-            cursor: pointer;
-        }
-    }
-`
-
-const LinkItem = styled.div`
-    text-decoration: none;
-    color: white;
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    :hover {
-        background-color: rgb(221, 88, 0);
-        cursor: pointer;
-    }
-`
