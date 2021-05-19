@@ -6,24 +6,32 @@ import { useHistory } from 'react-router-dom'
 
 const axios = require('axios')
 
-function RegisterUser() {
+function RegisterUser({ user, setShowForm, setLoadingAdmin }) {
     const history = useHistory()
-    const [cpf, setCpf] = useState('')
-    const [name, setName] = useState('')
-    const [birthday, setBirthday] = useState('')
-    const [sex, setSex] = useState('')
-    const [address, setAddress] = useState('')
-    const [number, setNumber] = useState('')
-    const [city, setCity] = useState('')
-    const [state, setState] = useState('')
-    const [country, setCountry] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confPass, setConfPass] = useState('')
+    const [cpf, setCpf] = useState(user ? user.cpf : '')
+    const [name, setName] = useState(user ? user.name : '')
+    const [birthday, setBirthday] = useState(user ? user.birthday : '')
+    const [sex, setSex] = useState(user ? user.sex : '')
+    const [address, setAddress] = useState(user ? user.address : '')
+    const [number, setNumber] = useState(user ? user.nbr : '')
+    const [city, setCity] = useState(user ? user.city : '')
+    const [state, setState] = useState(user ? user.state : '')
+    const [country, setCountry] = useState(user ? user.country : '')
+    const [email, setEmail] = useState(user ? user.email : '')
+    const [password, setPassword] = useState(user ? user.password : '')
+    const [confPass, setConfPass] = useState(user ? user.password : '')
     const [messageDangerBirthday, setMessageDangerBirthday] = useState('Type a valid birthday!')
     const [messageDangerAdd, setMessageDangerAdd] = useState('')
     const [messageSuccessAdd, setMessageSuccessAdd] = useState('')
     const [loading, setLoading] = useState(false)
+
+    const birthdayFormat = (dbFormat) => {
+        const reg = /(?<year>\d\d\d\d)-(?<month>\d\d)-(?<day>\d\d)/
+        const ex = reg.exec(dbFormat)
+        const {year, month, day} = ex.groups
+        
+        return day + month + year
+    }
 
     const isLeapYear = (n) => {
         return ((n % 400) === 0 || ((n % 4) === 0 && (n % 100) !== 0))
@@ -131,8 +139,9 @@ function RegisterUser() {
         else {
             axios.get(`/users/${cpf}`)
                 .then(function(response) {
-                    const user = response.data
-                    if(user === null || user === undefined || user === "") {
+                    const oldUser = response.data
+                    
+                    if(oldUser === null || oldUser === undefined || oldUser === "") {
                         axios.post('/users/add/', {
                             cpf,
                             name,
@@ -148,28 +157,56 @@ function RegisterUser() {
                         }).then(function(response) {
                             const newUser = response.data
                             setMessageSuccessAdd(`User ${newUser.name} registered successfully!`)
+                            setMessageDangerAdd('')
                             setTimeout(() => {
                                 setLoading(false)
                                 history.goBack()
                             }, 3000)
                         })
                     }
-                    else
+                    else if(!user) {
+                        setMessageSuccessAdd('')
                         setMessageDangerAdd(`User ${name} could not be registered, verify if you have already registered with this CPF: ${cpf}`)
+                    }
+                    else {
+                        axios.put('/users/update/', {
+                            cpf,
+                            name,
+                            birthday,
+                            sex,
+                            address,
+                            nbr: number,
+                            city,
+                            state,
+                            country,
+                            email,
+                            password
+                        }).then(function(response) {
+                            const newUser = response.data
+                            setMessageSuccessAdd(`User ${newUser.name} updated successfully!`)
+                            setMessageDangerAdd('')
+                            setTimeout(() => {
+                                setLoading(false)
+                                setShowForm(false)
+                                setLoadingAdmin(true)
+                            }, 3000)
+                        })
+                    }
                 })
         }
-        setLoading(false)
     }
 
     return (
         <Container>
-            <Title>Registering user</Title>
+            {
+                !user ? ( <Title>Registering user</Title> ) : null
+            }
             <FormContainer>
                 <Form>
                     <Form.Row>
                         <Form.Group as={ Col } controlId="nameContainer">
                             <Form.Label>Your complete name</Form.Label>
-                            <Form.Control type="text" placeholder="Place your complete name" onChange={ (e) => { setName(e.target.value) } } />
+                            <Form.Control type="text" defaultValue={ user ? user.name : '' } placeholder="Place your complete name" onChange={ (e) => { setName(e.target.value) } } />
                             {
                                 name.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                         Type your complete name.
@@ -179,7 +216,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="cpfContainer">
                             <Form.Label>CPF</Form.Label>
-                            <Form.Control as={ NumberFormat } format="###.###.###-##" mask="_" onValueChange={ verifyAndSetCpf } placeholder="Place your CPF" />
+                            <Form.Control as={ NumberFormat } format="###.###.###-##" mask="_" defaultValue={ user ? user.cpf : '' } onValueChange={ verifyAndSetCpf } placeholder="Place your CPF" />
                             {
                                 cpf.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                         Type a valid CPF.
@@ -189,7 +226,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="birthdayContainer">
                             <Form.Label>Birthday</Form.Label>
-                            <Form.Control as={ NumberFormat } format="##/##/####" mask="_" onValueChange={ verifyAndSetDate } placeholder="Place your Birthday" />
+                            <Form.Control as={ NumberFormat } format="##/##/####" mask="_" defaultValue={ user ? birthdayFormat(user.birthday) : '' } onValueChange={ verifyAndSetDate } placeholder="Place your Birthday" />
                             {
                                 birthday.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             {messageDangerBirthday}
@@ -199,7 +236,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="sexContainer">
                             <Form.Label>Sex</Form.Label>
-                            <Form.Control as="select" onChange={ (e) => setSex(e.target.value) }>
+                            <Form.Control as="select" defaultValue={ user ? user.sex : ' ' } onChange={ (e) => setSex(e.target.value) }>
                                 <option value=" ">Select your gender</option>
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
@@ -216,7 +253,7 @@ function RegisterUser() {
                     <Form.Row>
                         <Form.Group as={ Col } controlId="addressStreetContainer">
                             <Form.Label>Street</Form.Label>
-                            <Form.Control type="text" onChange={ (e) => setAddress(e.target.value) } placeholder="Place your address street" />
+                            <Form.Control type="text" defaultValue={ user ? user.address : '' } onChange={ (e) => setAddress(e.target.value) } placeholder="Place your address street" />
                             {
                                 address.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your address's street.
@@ -226,7 +263,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="addressNumberContainer">
                             <Form.Label>Number</Form.Label>
-                            <Form.Control as={ NumberFormat } onValueChange={ (e) => setNumber(e.value) } placeholder="Place your address number" />
+                            <Form.Control as={ NumberFormat } defaultValue={ user ? user.nbr : '' } onValueChange={ (e) => setNumber(e.value) } placeholder="Place your address number" />
                             {
                                 number.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your address's number.
@@ -236,7 +273,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="cityContainer">
                             <Form.Label>City</Form.Label>
-                            <Form.Control type="text" onChange={ (e) => setCity(e.target.value) } placeholder="Place your city" />
+                            <Form.Control type="text" defaultValue={ user ? user.city : '' } onChange={ (e) => setCity(e.target.value) } placeholder="Place your city" />
                             {
                                 city.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your city.
@@ -246,7 +283,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="stateContainer">
                             <Form.Label>State</Form.Label>
-                            <Form.Control type="text" onChange={ (e) => setState(e.target.value) } placeholder="Place your state" />
+                            <Form.Control type="text" defaultValue={ user ? user.state : '' } onChange={ (e) => setState(e.target.value) } placeholder="Place your state" />
                             {
                                 state.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your state.
@@ -256,7 +293,7 @@ function RegisterUser() {
                         </Form.Group>
                         <Form.Group as={ Col } controlId="countryContainer">
                             <Form.Label>Country</Form.Label>
-                            <Form.Control type="text" onChange={ (e) => setCountry(e.target.value) } placeholder="Place your country" />
+                            <Form.Control type="text" defaultValue={ user ? user.state : ' ' } onChange={ (e) => setCountry(e.target.value) } placeholder="Place your country" />
                             {
                                 state.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your country.
@@ -268,7 +305,7 @@ function RegisterUser() {
                     <Form.Row>
                         <Form.Group as={ Col } controlId="emailContainer">
                             <Form.Label>E-mail</Form.Label>
-                            <Form.Control type="email" onChange={ (e) => setEmail(e.target.value) } placeholder="Type your e-mail" />
+                            <Form.Control type="email" defaultValue={ user ? user.email : ' ' } onChange={ (e) => setEmail(e.target.value) } placeholder="Type your e-mail" />
                             {
                                 email.length === 0 ? (<Form.Text as={ Alert } variant="danger">
                                                             Type your e-mail.
@@ -276,27 +313,33 @@ function RegisterUser() {
                                                         ) : null
                             }
                         </Form.Group>
-                        <Form.Group as={ Col } controlId="passwordContainer">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" onChange={ (e) => setPassword(e.target.value) } placeholder="Type your password" />
-                            {
-                                password.length === 0 ? (<Form.Text as={ Alert } variant="danger">
-                                                            Type your password.
-                                                        </Form.Text>
-                                                        ) : null
-                            }
-                        </Form.Group>
-                        <Form.Group as={ Col } controlId="confPassContainer">
-                            <Form.Label>Confirm password</Form.Label>
-                            <Form.Control type="password" onChange={ (e) => setConfPass(e.target.value) } placeholder="Confirm your password" />
-                            {
-                                confPass.length === 0 ? (<Form.Text as={ Alert } variant="danger">
-                                                            Confirm your password.
-                                                        </Form.Text>
-                                                        ) : null
-                            }
-                        </Form.Group>
                     </Form.Row>
+                        {
+                            !user ? (
+                                <Form.Row>
+                                    <Form.Group as={ Col } controlId="passwordContainer">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control type="password" defaultValue={ user ? user.password : '' } onChange={ (e) => setPassword(e.target.value) } placeholder="Type your password" />
+                                        {
+                                            password.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                                        Type your password.
+                                                                    </Form.Text>
+                                                                    ) : null
+                                        }
+                                    </Form.Group>
+                                    <Form.Group as={ Col } controlId="confPassContainer">
+                                        <Form.Label>Confirm password</Form.Label>
+                                        <Form.Control type="password" defaultValue={ user ? user.password : '' } onChange={ (e) => setConfPass(e.target.value) } placeholder="Confirm your password" />
+                                        {
+                                            confPass.length === 0 ? (<Form.Text as={ Alert } variant="danger">
+                                                                        Confirm your password.
+                                                                    </Form.Text>
+                                                                    ) : null
+                                        }
+                                    </Form.Group>
+                                </Form.Row>
+                            ) : null
+                        }
                     <Form.Row>
                         {
                             messageDangerAdd.length > 0 ? (<Form.Text as={ Alert } variant="danger">
@@ -314,14 +357,18 @@ function RegisterUser() {
                     <Form.Row>
                         <Form.Group as={ Col } controlId="registerButtonContainer">
                             <Button onClick={ addUser } variant="outline-primary">
-                                { loading ? "Loading..." : "Register" }
+                                { loading ? "Loading..." : user ? "Update" : "Register" }
                             </Button>
                         </Form.Group>
-                        <Form.Group as={ Col } controlId="backButtonContainer">
-                            <Button variant="outline-primary" onClick={ () => history.goBack() }>
-                                Go back
-                            </Button>
-                        </Form.Group>
+                        {
+                            !user ? (
+                                        <Form.Group as={ Col } controlId="backButtonContainer">
+                                            <Button variant="outline-primary" onClick={ () => history.goBack() }>
+                                                Go back
+                                            </Button>
+                                        </Form.Group>
+                                     ) : null
+                        }
                     </Form.Row>
                 </Form>
             </FormContainer>

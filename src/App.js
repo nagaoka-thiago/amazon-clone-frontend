@@ -45,7 +45,7 @@ function App() {
           user === null ? (
                               <Switch>
                                   <Route path="/register">
-                                    <RegisterUser />
+                                    <RegisterUser isEdit={false} user={null} setShowForm={null} setLoadingAdmin={null} />
                                   </Route>
                                   <Route path="/">
                                     <Login setUser={ setUser } sinalizeDataBase={ sinalizeDataBase } setSinalizeDataBase={ setSinalizeDataBase } />

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-
+import RegisterUser from './RegisterUser'
 import { Table, Spinner, Button, Modal } from 'react-bootstrap'
-import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -12,6 +11,8 @@ function UserAdmin() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
+    const [showDeleteForm, setShowDeleteForm] = useState(false)
+    const [userSelected, setUserSelected] = useState({})
 
     const cpfFormat = (number) => {
         const reg = /(?<fp>\d\d\d)(?<sp>\d\d\d)(?<td>\d\d\d)(?<fop>\d\d)/
@@ -29,6 +30,16 @@ function UserAdmin() {
         
         return day + "/" + month + "/" + year
     }
+    
+    const deleteUser = () => {
+        axios.delete(`/users/delete/${userSelected.cpf}`)
+            .then(function(response) {
+                const deletedUser = response.data
+                if(deletedUser !== null && deletedUser !== undefined)
+                    setShowDeleteForm(false)
+                    setLoading(true)
+            })
+    }
 
     useEffect(() => {
         if(loading) {
@@ -38,7 +49,7 @@ function UserAdmin() {
                     setLoading(false)
                 })
         }
-    }, [])
+    }, [loading])
     return (
         <Container>
             <Title>
@@ -75,42 +86,48 @@ function UserAdmin() {
                                 <td>{user.country}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <Button variant="outline-primary" onClick={() => setShowForm(true)}><EditIcon /></Button>
-                                    <Button variant="outline-primary" onClick={() => alert(user.name)}><DeleteIcon /></Button>
+                                    <Button variant="outline-primary" onClick={ () => { setUserSelected(user); setShowForm(true)} }><EditIcon /></Button>
+                                    <Button variant="outline-primary" onClick={ () => { setUserSelected(user); setShowDeleteForm(true)} }><DeleteIcon /></Button>
                                 </td>
                             </tr>
                             )
                     }
-                    <tr>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>{''}</td>
-                        <td>
-                            <Button variant="outline-primary" onClick={() => setShowForm(true)}><AddIcon /></Button>
-                        </td>
-                    </tr>
                 </tbody>
             </Table>
             <Modal show={showForm}
                    onHide={ () => setShowForm(false) }
-                   size="sm"
+                   size="lg"
+                   backdrop="static"
+                   keyboard={false}
                    >
                 <Modal.Header closeButton>
-                    <Modal.Title>Hello world</Modal.Title>
+                    <Modal.Title>{userSelected !== {} ? userSelected.name : "User"}' edit</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h1>Hello world</h1>
+                    <RegisterUser user={userSelected} isEdit={true} setShowForm={ setShowForm } setLoadingAdmin={ setLoading } />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary"
                             onClick={ () => setShowForm(false) }>Close</Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showDeleteForm}
+                   onHide={ () => setShowDeleteForm(false) }
+                   size="lg"
+                   backdrop="static"
+                   keyboard={false}
+                   >
+                <Modal.Header>
+                    <Modal.Title>Deleting user {userSelected.name}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h3>Are you sure you want to delete {userSelected.name}'s profile?</h3>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary"
+                            onClick={ () => setShowDeleteForm(false) }>No</Button>
+                    <Button variant="outline-primary"
+                            onClick={ deleteUser }>Yes</Button>
                 </Modal.Footer>
             </Modal>
             {

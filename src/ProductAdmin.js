@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
+import RegisterProduct from './RegisterProduct'
 import { Table, Modal, Button, Figure, Spinner } from 'react-bootstrap'
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
@@ -9,6 +10,7 @@ const axios = require('axios')
 
 function ProductAdmin() {
     const [products, setProducts] = useState([])
+    const [productSelected, setProductSelected] = useState({})
     const [showImage, setShowImage] = useState(false)
     const [imageUrl, setImageUrl] = useState('')
     const [showForm, setShowForm] = useState(false)
@@ -52,8 +54,8 @@ function ProductAdmin() {
                             <td>{product.rating}</td>
                             <td>{product.price}</td>
                             <td>
-                                <Button variant="outline-primary" onClick={() => setShowForm(true)}><EditIcon /></Button>
-                                <Button variant="outline-primary" onClick={() => alert(product.title)}><DeleteIcon /></Button>
+                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowForm(true)} }><EditIcon /></Button>
+                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowForm(true)} }><DeleteIcon /></Button>
                             </td>
                         </tr>
                         )
@@ -94,10 +96,10 @@ function ProductAdmin() {
                    size="sm"
                    >
                 <Modal.Header closeButton>
-                    <Modal.Title>Hello world</Modal.Title>
+                    <Modal.Title>Product '{productSelected.title}' edition </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h1>Hello world</h1>
+                    <RegisterProduct product={ productSelected } setLoadingAdmin={ setLoading } />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary"
