@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import {
     Link
   } from "react-router-dom";
@@ -17,16 +16,16 @@ function HeaderAdmin({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
     return (
         <Nav variant="pills" defaultActiveKey="home">
             <Nav.Item>
-                <Nav.Link as={Link} to="/" eventKey="home">Administration</Nav.Link>
+                <Nav.Link as={Link} to="/" eventKey="home" className="mr-2">Administration</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-                <Nav.Link as={Link} to="/userscontrol" eventKey="users">Users</Nav.Link>
+                <Nav.Link as={Link} to="/userscontrol" eventKey="users" className="mr-2">Users</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-                <Nav.Link as={Link} to="/productscontrol" eventKey="products">Products</Nav.Link>
+                <Nav.Link as={Link} to="/productscontrol" eventKey="products" className="mr-2">Products</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-                <Nav.Link as={Button} variant="secondary" eventKey="logout" onClick={ logOutFunction }>Log out</Nav.Link>
+                <Nav.Link as={Button} variant="outline-secondary" eventKey="logout" onClick={ logOutFunction }>Log out</Nav.Link>
             </Nav.Item>
         </Nav>
     )

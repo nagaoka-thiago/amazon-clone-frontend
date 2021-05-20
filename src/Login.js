@@ -81,7 +81,7 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                     </Form.Row>
                     <Form.Row>
                         <Form.Group as={ Col } controlId="loginButtonContainer">
-                            <Button variant="outline-primary" onClick={ loginFunction }>
+                            <Button variant="outline-primary" onClick={ loginFunction } disabled={ loading }>
                                 { loading ? "Loading..." : "Login" }
                             </Button>
                         </Form.Group>

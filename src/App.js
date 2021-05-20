@@ -1,5 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-app-polyfill/stable';
 
 import Header from './Header'
 import HeaderAdmin from './HeaderAdmin';
