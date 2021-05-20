@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 import RegisterProduct from './RegisterProduct'
+import NumberFormat from 'react-number-format'
 import { Table, Modal, Button, Figure, Spinner } from 'react-bootstrap'
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
@@ -12,9 +13,19 @@ function ProductAdmin() {
     const [products, setProducts] = useState([])
     const [productSelected, setProductSelected] = useState({})
     const [showImage, setShowImage] = useState(false)
-    const [imageUrl, setImageUrl] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [showDeleteForm, setShowDeleteForm] = useState(false)
     const [loading, setLoading] = useState(true)
+
+    const deleteProduct = () => {
+        axios.delete(`/products/delete/${productSelected.nbr}`)
+            .then(function(response) {
+                const deletedProduct = response.data
+                if(deletedProduct !== null && deletedProduct !== undefined)
+                    setShowDeleteForm(false)
+                    setLoading(true)
+            })
+    }
 
     useEffect(() => {
         if(loading) {
@@ -24,7 +35,7 @@ function ProductAdmin() {
                     setLoading(false)
                 })
         }
-    }, [])
+    }, [loading])
 
     return (
         <Container>
@@ -49,13 +60,13 @@ function ProductAdmin() {
                         <tr key={product.nbr}>
                             <td>{product.nbr}</td>
                             <td>{product.title}</td>
-                            <td><Button variant="outline-primary" onClick={ () => {setImageUrl(product.image); setShowImage(true);} }>Show image</Button></td>
+                            <td><Button variant="outline-primary" onClick={ () => {setProductSelected(product); setShowImage(true);} }>Show image</Button></td>
                             <td>{product.quantity}</td>
                             <td>{product.rating}</td>
-                            <td>{product.price}</td>
+                            <td><NumberFormat value={product.price} displayType={'text'} thousandSeparator={true} prefix={'$'} /></td>
                             <td>
-                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowForm(true)} }><EditIcon /></Button>
-                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowForm(true)} }><DeleteIcon /></Button>
+                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowForm(true)} } className="mr-2"><EditIcon /></Button>
+                                <Button variant="outline-primary" onClick={() => { setProductSelected(product); setShowDeleteForm(true)} } ><DeleteIcon /></Button>
                             </td>
                         </tr>
                         )
@@ -68,7 +79,7 @@ function ProductAdmin() {
                         <td>{''}</td>
                         <td>{''}</td>
                         <td>
-                            <Button variant="outline-primary" onClick={() => setShowForm(true)}><AddIcon /></Button>
+                            <Button variant="outline-primary" onClick={() => { setProductSelected(null); setShowForm(true)} }><AddIcon /></Button>
                         </td>
                     </tr>
                 </tbody>
@@ -77,13 +88,15 @@ function ProductAdmin() {
             <Modal show={showImage}
                    onHide={ () => setShowImage(false) }
                    size="sm"
+                   backdrop="static"
+                   keyboard={false}
                    >
                 <Modal.Header closeButton>
-                    <Modal.Title>Product's image</Modal.Title>
+                    <Modal.Title>Product '{ productSelected ? productSelected.nbr : null }' image</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Figure>
-                        <Figure.Image width="100%" height="100%" src={ imageUrl } />
+                        <Figure.Image width="100%" height="100%" src={ productSelected ? productSelected.image : null } />
                     </Figure>
                 </Modal.Body>
                 <Modal.Footer>
@@ -93,17 +106,38 @@ function ProductAdmin() {
             </Modal>
             <Modal show={showForm}
                    onHide={ () => setShowForm(false) }
-                   size="sm"
+                   size="lg"
+                   backdrop="static"
+                   keyboard={false}
                    >
                 <Modal.Header closeButton>
-                    <Modal.Title>Product '{productSelected.title}' edition </Modal.Title>
+                    <Modal.Title>{ productSelected ? `Product '${productSelected.title}' edition` : 'Registering product' }</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <RegisterProduct product={ productSelected } setLoadingAdmin={ setLoading } />
+                    <RegisterProduct product={ productSelected } setShowForm={ setShowForm } setLoadingAdmin={ setLoading } />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary"
                             onClick={ () => setShowForm(false) }>Close</Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showDeleteForm}
+                   onHide={ () => setShowDeleteForm(false) }
+                   size="lg"
+                   backdrop="static"
+                   keyboard={false}
+                   >
+                <Modal.Header>
+                    <Modal.Title>{ productSelected ? `Deleting product \'${productSelected.title}` : null }</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h3>Are you sure you want to delete product '{productSelected ? productSelected.title : ''}'?</h3>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary"
+                            onClick={ () => setShowDeleteForm(false) }>No</Button>
+                    <Button variant="outline-primary"
+                            onClick={ deleteProduct }>Yes</Button>
                 </Modal.Footer>
             </Modal>
             {

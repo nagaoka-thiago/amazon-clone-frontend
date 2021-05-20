@@ -24,17 +24,24 @@ function Login({ setUser, sinalizeDataBase, setSinalizeDataBase }) {
                         if (user) {
                             setUser(user)
                             localStorage.setItem('user', JSON.stringify(user))
+                            setLoading(false)
                             setSinalizeDataBase(!sinalizeDataBase)
                         }
-                        else setIsUserIncorrect(true)
+                        else {
+                            setLoading(false)
+                            setIsUserIncorrect(true)
+                        }
                     })
             } else if(userPassword === "1234") {
                 setUser({ isAdmin: true })
                 localStorage.setItem('user', JSON.stringify({ isAdmin: true }))
+                setLoading(false)
                 setSinalizeDataBase(!sinalizeDataBase)
             }
         }
-        setLoading(false)
+        else {
+            setLoading(false)
+        }
     }
     return (
         <Container>

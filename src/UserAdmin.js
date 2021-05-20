@@ -78,7 +78,7 @@ function UserAdmin() {
                                 <td>{cpfFormat(user.cpf)}</td>
                                 <td>{user.name}</td>
                                 <td>{birthdayFormat(user.birthday)}</td>
-                                <td>{user.sex}</td>
+                                <td>{ user.sex === 'M' ? 'Male' : user.sex === 'F' ? 'Female' : 'Other' }</td>
                                 <td>{user.address}</td>
                                 <td>{user.nbr}</td>
                                 <td>{user.city}</td>
@@ -86,7 +86,7 @@ function UserAdmin() {
                                 <td>{user.country}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <Button variant="outline-primary" onClick={ () => { setUserSelected(user); setShowForm(true)} }><EditIcon /></Button>
+                                    <Button variant="outline-primary" onClick={ () => { setUserSelected(user); setShowForm(true)} } className="mr-2"><EditIcon /></Button>
                                     <Button variant="outline-primary" onClick={ () => { setUserSelected(user); setShowDeleteForm(true)} }><DeleteIcon /></Button>
                                 </td>
                             </tr>
@@ -101,7 +101,7 @@ function UserAdmin() {
                    keyboard={false}
                    >
                 <Modal.Header closeButton>
-                    <Modal.Title>{userSelected !== {} ? userSelected.name : "User"}' edit</Modal.Title>
+                    <Modal.Title>User '{ userSelected.name }' edition</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <RegisterUser user={userSelected} isEdit={true} setShowForm={ setShowForm } setLoadingAdmin={ setLoading } />
