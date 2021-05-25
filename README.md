@@ -53,6 +53,8 @@ First of all, it has their functionallity of adding to and deleting from cart, w
  ![admin_users](project_imgs/admin_users_list.png)
 
  > Administration home page.
+ 
+ The main url for this project is: https://myownamazonclone.herokuapp.com/
 
 #### Technologies
 
