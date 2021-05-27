@@ -54,7 +54,15 @@ First of all, it has their functionallity of adding to and deleting from cart, w
 
  > Administration home page.
  
- The main url for this project is: https://myownamazonclone.herokuapp.com/
+ The main url for this project is: https://myownamazonclone.herokuapp.com/ . The users credentials are:
+
+ E-mail-----------------Password
+
+ test1@email.com--------1234
+
+ test2@email.com--------123467
+
+ admin------------------1234
 
 #### Technologies
 
